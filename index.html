@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap" rel="stylesheet">
+<link href="./style.css" rel="stylesheet">
+</head>
+<body id='body'>
+    
+    <form onsubmit="return false">
+        <h1 id='name'></h1>
+        <input type="text" id='city' autocomplete="off">
+        <button onclick="Data()">🔍</button>
+    
+        
+        <h2 id='degrees'></h2>
+        <h2 id='weather'></h2>
+        <h2 id='weather_des'></h2>
+        <h2 id='sunrise'></h2>
+        <h2 id='sunset'></h2>
+       
+    </form>
+   
+</body >
+</html>
+
+<script>
+
+    function Data(){
+        let degrees = document.getElementById('degrees')
+        let weather = document.getElementById('weather')
+        let sunrise = document.getElementById('sunrise')
+        let sunset = document.getElementById('sunset')
+        let title = document.getElementById('name')
+        let img = document.getElementById('image')
+        let request = new XMLHttpRequest()
+        request.open('GET', `https://api.openweathermap.org/data/2.5/weather?q=${document.getElementById('city').value}&appid=7ced62bb79802bb211af5100f2271d84&units=metric`)
+        request.send()
+        request.onload = () => {
+            var response = JSON.parse(request.response)
+            title.innerHTML = 'Weather in ' + response.name
+            degrees.innerHTML = response.main.temp + 'ºC'
+            weather.innerHTML = 'Main weather: ' + response.weather[0].main
+            document.getElementById('weather_des').innerHTML = 'Main weather description: ' + response.weather[0].description
+            var sunrise_unix_time =response.sys.sunrise
+            var milliseconds=  sunrise_unix_time * 1000
+            var dateObject = new Date(milliseconds)
+            const humanDateFormat = dateObject.toLocaleString()
+
+            sunrise.innerHTML ='Sunrise: ' + humanDateFormat
+
+            var sunset_unix_time =response.sys.sunset
+            var milliseconds_set=  sunset_unix_time * 1000
+            var dateObject_set = new Date(milliseconds_set)
+            const humanDateFormat_set = dateObject_set.toLocaleString()
+
+            sunset.innerHTML = 'Sunset: '+  humanDateFormat_set
+            
+            let img_request = new XMLHttpRequest()
+            img_request.open('GET', `https://pixabay.com/api/?key=23337810-fa43df806ece16d26cceb6f99&q=${document.getElementById('city').value}&image_type=photo&pretty=true&width=1000`)
+            img_request.send()
+            img_request.onload = () => {
+                var response_img = JSON.parse(img_request.response)
+                console.log(response_img)
+                
+                console.log(response_img.hits[0].largeImageURL)
+                var image = response_img.hits[0].largeImageURL
+
+                
+                let body = document.getElementById('body')
+                document.getElementById('body').style.backgroundImage =`url(${response_img.hits[0].largeImageURL})`
+               
+
+            }
+
+    }
+    }
+
+</script>
